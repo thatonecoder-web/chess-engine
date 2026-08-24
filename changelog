@@ -1,2 +1,7 @@
-VERSION 0.1
-  Made project structure
+v0.1.0 — Project foundation
+         └─ Repo structure, README, license, changelog
+
+v0.1.1 — Basic board
+         ├─ Piece classes
+         ├─ Board representation
+         └─ ASCII board display
