@@ -1,9 +1,11 @@
 from .pieces import Pawn, Knight, Bishop, Rook, Queen, King
+from .moves import Move
 
 
 class Board:
     def __init__(self):
         self.board = self._create_board()
+        self.turn = "white"
 
     def _create_board(self):
         board = [[None for _ in range(8)] for _ in range(8)]
@@ -56,3 +58,31 @@ class Board:
             print(f"{rank} {' '.join(pieces)}")
 
         print()
+
+    def make_move(self, move):
+        start_row, start_col = move.get_coordinates(move.start)
+        end_row, end_col = move.get_coordinates(move.end)
+
+        piece = self.board[start_row][start_col]
+        target = self.board[end_row][end_col]
+
+        # No piece at starting position
+        if piece is None:
+            return False
+
+        # Wrong player's turn
+        if piece.color != self.turn:
+            return False
+
+        # Cannot capture your own piece
+        if target is not None and target.color == self.turn:
+            return False
+
+        # Move the piece
+        self.board[end_row][end_col] = piece
+        self.board[start_row][start_col] = None
+
+        # Switch turns
+        self.turn = "black" if self.turn == "white" else "white"
+
+        return True

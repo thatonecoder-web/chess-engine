@@ -1,31 +1,7 @@
-## [0.1.3] - 2026-09-01
+v0.1.0 — Project foundation
+         └─ Repo structure, README, license, changelog
 
-### Added
-- Basic move execution
-- Chess coordinate conversion
-- Piece capturing
-- Turn tracking
-- Basic move input
-
-## [0.1.2] - 2026-08-24
-
-### Added
-- Basic `Move` class
-- Start and end square representation
-- Basic move string representation
-
-## [0.1.1] - 2026-08-24
-
-### Added
-- Basic chess piece classes
-- 8×8 board representation
-- Standard starting position
-- ASCII board display
-
-## [0.1.0] - 2026-08-24
-
-### Added
-- Initial project structure
-- README
-- License
-- Changelog
+v0.1.1 — Basic board
+         ├─ Piece classes
+         ├─ Board representation
+         └─ ASCII board display
