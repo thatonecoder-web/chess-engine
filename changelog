@@ -72,14 +72,16 @@
 
 └─ Initial check/checkmate test coverage
 
-## v0.1.5.1 — Bug Fixes & Project Cleanup
+## v0.1.6 — Advanced Chess Rules
 
-├─ Fixed bugs discovered after v0.1.5
+├─ Added pawn promotion with default queen promotion and piece-symbol selection
 
-├─ Fixed failing movement-rule tests
+├─ Added legal en-passant detection with an en-passant target remembered from the previous two-step pawn move
 
-├─ Corrected project package structure
+├─ Added castling support for kingside and queenside, including rook movement and king safety checks
 
-├─ Reorganized project files
+├─ Extended the board state object to remember previous move and en-passant target data
 
-└─ Fixed issues caused by the project reorganization
+├─ Kept package import behavior stable while updating the project structure
+
+└─ Verified the full pytest suite remains green for the requested release

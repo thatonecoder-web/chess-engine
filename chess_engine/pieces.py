@@ -2,6 +2,7 @@ class Piece:
     def __init__(self, symbol, color):
         self.symbol = symbol
         self.color = color
+        self.has_moved = False
 
     def __str__(self):
         return self.symbol
