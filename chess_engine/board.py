@@ -1,3 +1,6 @@
+from .check import move_leaves_king_in_check
+from .rules import is_valid_move
+
 from .pieces import Pawn, Knight, Bishop, Rook, Queen, King
 from .moves import Move
 
@@ -76,6 +79,22 @@ class Board:
 
         # Cannot capture your own piece
         if target is not None and target.color == self.turn:
+            return False
+
+        # Check basic piece movement rules
+        if not is_valid_move(
+            self,
+            (start_row, start_col),
+            (end_row, end_col),
+        ):
+            return False
+
+        # Cannot leave your own king in check
+        if move_leaves_king_in_check(
+            self,
+            (start_row, start_col),
+            (end_row, end_col),
+        ):
             return False
 
         # Move the piece

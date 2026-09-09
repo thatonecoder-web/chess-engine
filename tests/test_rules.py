@@ -1,6 +1,6 @@
-from src.board import Board
-from src.moves import Move
-from src.rules import is_valid_move
+from chess_engine.board import Board
+from chess_engine.moves import Move
+from chess_engine.rules import is_valid_move
 
 
 def test_pawn_can_move_one_square():
@@ -89,8 +89,11 @@ def test_rook_moves_straight():
 def test_queen_moves_diagonally():
     board = Board()
 
-    # Clear the diagonal path.
+    # Clear the diagonal route by making the pawn on d2 leave the file
+    # and then letting the pawn on e2 vacate the bishop's path window.
     board.make_move(Move("d2", "d4"))
+    board.turn = "white"
+    board.make_move(Move("e2", "e3"))
 
     move = Move("d1", "h5")
 
@@ -103,15 +106,12 @@ def test_queen_moves_diagonally():
 def test_king_moves_one_square():
     board = Board()
 
-    # Clear the square in front of the king.
-    board.make_move(Move("e2", "e3"))
-
     move = Move("e1", "e2")
 
     start = move.get_coordinates(move.start)
     end = move.get_coordinates(move.end)
 
-    # e2 contains the pawn, so this should be rejected.
+    # e2 contains a white pawn, so the king may not land on that square.
     assert is_valid_move(board, start, end) is False
 
 

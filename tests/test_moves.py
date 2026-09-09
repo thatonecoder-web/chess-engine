@@ -1,4 +1,4 @@
-from src.moves import Move
+from chess_engine.moves import Move
 
 
 def test_move_creation():

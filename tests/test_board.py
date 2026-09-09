@@ -1,5 +1,5 @@
-from src.board import Board
-from src.moves import Move
+from chess_engine.board import Board
+from chess_engine.moves import Move
 
 
 def test_board_creation():
