@@ -19,4 +19,4 @@ testpaths = ["tests"]
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["src*"]
+include = ["chess_engine*"]
