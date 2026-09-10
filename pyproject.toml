@@ -4,9 +4,14 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "chess-engine"
-version = "0.1.5"
+version = "0.1.6"
 description = "An open-source Python chess engine built from scratch."
 requires-python = ">=3.11"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=9.0"
+]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
@@ -14,4 +19,4 @@ testpaths = ["tests"]
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["chess_engine*"]
+include = ["src*"]
