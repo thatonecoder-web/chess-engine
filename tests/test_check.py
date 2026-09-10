@@ -1,11 +1,13 @@
 from chess_engine.board import Board
 from chess_engine.moves import Move
+from chess_engine.pieces import Pawn
 from chess_engine.check import (
     find_king,
     is_square_attacked,
     is_in_check,
     move_leaves_king_in_check,
     has_legal_moves,
+    generate_legal_moves,
     is_checkmate,
     is_stalemate,
 )
@@ -133,3 +135,23 @@ def test_position_is_not_stalemate_at_start():
 
     assert is_stalemate(board, "white") is False
     assert is_stalemate(board, "black") is False
+
+
+def test_generate_legal_moves_returns_a_list_for_white_at_start():
+    board = Board()
+
+    moves = generate_legal_moves(board, "white")
+
+    assert isinstance(moves, list)
+    assert len(moves) >= 20
+    assert all(isinstance(move, Move) for move in moves)
+
+
+def test_pawn_attacks_are_detected_on_the_diagonal_even_when_target_square_is_empty():
+    board = Board()
+    board.board = [[None for _ in range(8)] for _ in range(8)]
+
+    black_pawn = Pawn("p", "black")
+    board.board[4][4] = black_pawn
+
+    assert is_square_attacked(board, 5, 5, "black") is True

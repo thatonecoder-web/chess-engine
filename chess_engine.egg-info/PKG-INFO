@@ -1,0 +1,9 @@
+Metadata-Version: 2.4
+Name: chess-engine
+Version: 0.1.6
+Summary: An open-source Python chess engine built from scratch.
+Requires-Python: >=3.11
+License-File: LICENSE
+Provides-Extra: dev
+Requires-Dist: pytest>=9.0; extra == "dev"
+Dynamic: license-file

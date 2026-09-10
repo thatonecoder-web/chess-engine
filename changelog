@@ -85,3 +85,16 @@
 ├─ Kept package import behavior stable while updating the project structure
 
 └─ Verified the full pytest suite remains green for the requested release
+
+## v0.1.7 — Move & Game State Improvements
+
+├─ Added robust attack detection for pawn attacks, king attacks, and reliable check edge cases
+
+├─ Added legal move generation for a side and reused it for checkmate and stalemate detection
+
+├─ Centralized legality checks around move validation and coordinate rejection for invalid/out-of-board moves
+
+├─ Improved game-state detection to distinguish check, checkmate, and stalemate more clearly
+
+└─ Expanded test coverage for pawn checks, king attacks, pins, castling through attacked squares,
+   en passant exposing the king, promotion while in check, and checkmate/stalemate edge cases
