@@ -2,6 +2,20 @@ from chess_engine.board import Board
 from chess_engine.moves import Move
 
 
+def test_board_generates_and_parses_the_initial_fen_round_trip():
+    board = Board()
+    fen = board.to_fen()
+
+    assert fen == "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+
+    loaded = Board()
+    loaded.from_fen(fen)
+
+    assert loaded.turn == "white"
+    assert loaded.castling_rights == "KQkq"
+    assert loaded.en_passant_target is None
+
+
 def test_board_creation():
     board = Board()
 

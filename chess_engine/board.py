@@ -11,6 +11,138 @@ class Board:
         self.turn = "white"
         self.previous_move = None
         self.en_passant_target = None
+        self.castling_rights = "KQkq"
+        self.halfmove_clock = 0
+        self.fullmove_number = 1
+
+    def _square_to_coordinate(self, square):
+        if square == "-":
+            return None
+
+        col = ord(square[0]) - ord("a")
+        row = 8 - int(square[1])
+        return row, col
+
+    def _coordinate_to_square(self, row, col):
+        return f"{chr(ord('a') + col)}{8 - row}"
+
+    def validate_fen(self, fen):
+        """Validate a minimal FEN shape and return the parsed tuple.
+
+        The goal is intentionally conservative: allow our simple engine's
+        grammar while rejecting malformed FEN fields directly.
+        """
+
+        fields = fen.split()
+        if len(fields) != 6:
+            raise ValueError("FEN must contain 6 fields")
+
+        placement, active_color, castling, en_passant, halfmove, fullmove = fields
+
+        if active_color not in {"w", "b"}:
+            raise ValueError("active color must be 'w' or 'b'")
+
+        if castling and any(ch not in "KQkq-" for ch in castling):
+            raise ValueError("invalid castling-rights field")
+
+        if en_passant != "-" and len(en_passant) != 2:
+            raise ValueError("invalid en-passant target square")
+
+        if en_passant != "-":
+            file_char, rank_char = en_passant[0], en_passant[1]
+            if file_char < "a" or file_char > "h" or rank_char not in {"3", "6"}:
+                raise ValueError("en-passant target must be a legal file/rank pair")
+
+        try:
+            int(halfmove)
+            int(fullmove)
+        except ValueError as exc:
+            raise ValueError("halfmove/fullmove counters must be integers") from exc
+
+        return fields
+
+    def from_fen(self, fen):
+        """Load a board position from a Forsyth-Edwards Notation string."""
+
+        placement, active_color, castling, en_passant, halfmove, fullmove = self.validate_fen(fen)
+
+        rows = placement.split("/")
+        if len(rows) != 8:
+            raise ValueError("FEN piece placement must contain 8 ranks")
+
+        new_board = [[None for _ in range(8)] for _ in range(8)]
+
+        for rank_index, row_text in enumerate(rows):
+            col = 0
+            for ch in row_text:
+                if ch.isdigit():
+                    col += int(ch)
+                else:
+                    symbol = ch
+                    color = "white" if symbol.isupper() else "black"
+                    piece_cls = {
+                        "P": Pawn,
+                        "N": Knight,
+                        "B": Bishop,
+                        "R": Rook,
+                        "Q": Queen,
+                        "K": King,
+                        "p": Pawn,
+                        "n": Knight,
+                        "b": Bishop,
+                        "r": Rook,
+                        "q": Queen,
+                        "k": King,
+                    }.get(symbol, None)
+                    if piece_cls is None:
+                        raise ValueError("unknown FEN piece symbol")
+
+                    piece = piece_cls(symbol, color)
+                    new_board[rank_index][col] = piece
+                    col += 1
+
+        self.board = new_board
+        self.turn = "white" if active_color == "w" else "black"
+        self.castling_rights = castling if castling != "-" else ""
+        self.en_passant_target = self._square_to_coordinate(en_passant) if en_passant != "-" else None
+        self.halfmove_clock = int(halfmove)
+        self.fullmove_number = int(fullmove)
+        self.previous_move = None
+
+        return self
+
+    def to_fen(self):
+        """Generate a compact FEN string for the current board state."""
+
+        rows = []
+        for row in range(8):
+            file_text = ""
+            empty_run = 0
+            for col in range(8):
+                piece = self.board[row][col]
+                if piece is None:
+                    empty_run += 1
+                else:
+                    if empty_run:
+                        file_text += str(empty_run)
+                        empty_run = 0
+                    file_text += piece.symbol
+
+            if empty_run:
+                file_text += str(empty_run)
+
+            rows.append(file_text)
+
+        active = "w" if self.turn == "white" else "b"
+        ep_square = "-" if self.en_passant_target is None else self._coordinate_to_square(*self.en_passant_target)
+
+        return (
+            "/".join(rows)
+            + f" {active} "
+            + (self.castling_rights or "-")
+            + f" {ep_square} "
+            + f"{self.halfmove_clock} {self.fullmove_number}"
+        )
 
     def _create_board(self):
         board = [[None for _ in range(8)] for _ in range(8)]

@@ -1,6 +1,12 @@
 from chess_engine.moves import Move
 
 
+def test_move_to_algebraic_notation_vector():
+    move = Move("e2", "e4")
+
+    assert move.to_algebraic() == "e2e4"
+
+
 def test_move_creation():
     move = Move("e2", "e4")
 

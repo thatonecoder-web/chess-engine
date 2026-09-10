@@ -98,3 +98,17 @@
 
 └─ Expanded test coverage for pawn checks, king attacks, pins, castling through attacked squares,
    en passant exposing the king, promotion while in check, and checkmate/stalemate edge cases
+
+## v0.1.8 — Position Representation & Notation
+
+├─ Added FEN (Forsyth-Edwards Notation) position generation
+
+├─ Added FEN position parsing and loading
+
+├─ Added FEN validation for board state, active color, castling rights, en-passant target, and move counters
+
+├─ Added Algebraic Notation support for representing individual chess moves
+
+├─ Added FEN-based position testing for arbitrary board states
+
+└─ Expanded regression test coverage for FEN parsing, FEN generation, and algebraic move notation
