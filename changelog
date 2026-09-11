@@ -112,3 +112,29 @@
 ├─ Added FEN-based position testing for arbitrary board states
 
 └─ Expanded regression test coverage for FEN parsing, FEN generation, and algebraic move notation
+
+## v0.1.9 — Game Records & Engine Validation
+
+├─ Added move history tracking with move numbers and game state information
+
+├─ Added PGN (Portable Game Notation) parsing and generation
+
+├─ Added PGN game metadata support for players, event, site, date, result, and other standard tags
+
+├─ Added complete game replay from PGN move sequences
+
+├─ Added recursive Perft testing for validating legal move generation
+
+├─ Added standard starting-position Perft test cases
+
+├─ Added tactical and special-rule Perft positions covering castling, en passant, promotion, checks, and pins
+
+├─ Added move-generation regression tests based on Perft results
+
+├─ Added JSON-based save files for preserving resumable game state
+
+├─ Added save/load commands for terminal gameplay
+
+├─ Added undo and redo functionality using recorded game state
+
+└─ Expanded test coverage for PGN parsing, game replay, Perft validation, move history, and game persistence
