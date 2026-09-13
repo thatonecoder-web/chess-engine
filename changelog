@@ -138,3 +138,17 @@
 ├─ Added undo and redo functionality using recorded game state
 
 └─ Expanded test coverage for PGN parsing, game replay, Perft validation, move history, and game persistence
+
+## v0.2.0 — AI Engine (Planned)
+
+├─ New `chess_engine/ai/` module for the from-scratch chess AI
+
+├─ Evaluation function based on material count and piece-square tables
+
+├─ Minimax search with alpha-beta pruning
+
+├─ Move ordering (captures/checks first) for search efficiency
+
+├─ Selectable difficulty levels from 0 to max
+
+└─ `AIPlayer` interface for integration with the existing game loop
