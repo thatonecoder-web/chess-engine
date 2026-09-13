@@ -1,4 +1,4 @@
-# Repository Organization Summary - v0.1.9
+# Repository Organization Summary - v0.2.0
 
 ## ✅ Project Structure Complete
 
@@ -25,8 +25,15 @@ chess_engine/
 ├── pieces.py                    # Piece definitions (v0.1.1)
 ├── rules.py                     # Movement validation (v0.1.4)
 ├── check.py                     # Check/checkmate/legal moves (v0.1.7)
-├── game.py                      # Game history & PGN support (NEW v0.1.9)
-└── perft.py                     # Perft testing framework (NEW v0.1.9)
+├── game.py                      # Game history & PGN support (v0.1.9)
+├── perft.py                     # Perft testing framework (v0.1.9)
+└── ai/                          # Chess AI, from scratch (PLANNED v0.2.0)
+    ├── __init__.py
+    ├── evaluation.py            # Material count + piece-square tables
+    ├── search.py                # Minimax with alpha-beta pruning
+    ├── move_ordering.py         # Captures/checks-first ordering
+    ├── difficulty.py            # Level 0-max config (depth/randomness/blunder rate)
+    └── ai_player.py             # AIPlayer interface for game.py
 ```
 
 ### Test Suite
@@ -36,10 +43,16 @@ tests/
 ├── test_board.py                # Board & FEN (8 tests)
 ├── test_rules.py                # Piece movement (14 tests)
 ├── test_check.py                # Check/checkmate/pins (21 tests)
-├── test_game.py                 # Game history & PGN (30 tests, NEW v0.1.9)
-└── test_perft.py                # Perft validation (31 tests, NEW v0.1.9)
+├── test_game.py                 # Game history & PGN (30 tests, v0.1.9)
+├── test_perft.py                # Perft validation (31 tests, v0.1.9)
+└── ai/                          # PLANNED v0.2.0
+    ├── test_evaluation.py
+    ├── test_search.py
+    ├── test_move_ordering.py
+    ├── test_difficulty.py
+    └── test_ai_player.py
 
-Total: 131 tests, all passing ✅
+Total: 131 tests, all passing ✅ (v0.1.9)
 ```
 
 ---
@@ -232,13 +245,18 @@ Updated:
 
 ## 🔄 Next Steps
 
-### Immediate (v0.2.0)
-- [ ] Implement position evaluation
-- [ ] Add basic search algorithm
-- [ ] Performance optimization (bitboards)
+### Immediate (v0.2.0) — Chess AI, from scratch
+- [ ] `chess_engine/ai/` module (new subpackage)
+- [ ] Evaluation function: material count + piece-square tables
+- [ ] Minimax search with alpha-beta pruning
+- [ ] Move ordering (captures/checks first) for search efficiency
+- [ ] Selectable difficulty levels, 0 to max (depth scaling, move randomness among top-N, blunder injection)
+- [ ] `AIPlayer` interface for integration with `game.py`
 
 ### Short Term (v0.3.0)
-- [ ] Minimax with alpha-beta pruning
+- [ ] Board representation optimization (e.g. bitboards) for search speed
+- [ ] Transposition tables
+- [ ] Quiescence search
 - [ ] UCI protocol support
 - [ ] SAN move notation
 
@@ -264,7 +282,7 @@ The chess engine is production-ready for:
 
 ---
 
-**Last Updated:** September 11, 2026  
-**Status:** v0.1.9 Complete  
-**Tests:** 131 Passing  
+**Last Updated:** September 13, 2026
+**Status:** v0.1.9 Complete, v0.2.0 (AI Engine) Planned
+**Tests:** 131 Passing
 **Documentation:** Complete
