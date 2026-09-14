@@ -1,20 +1,3 @@
-"""
-search.py
-=========
-
-Minimax search with alpha-beta pruning, written from scratch (no chess
-or search libraries). This is the only place that walks the game tree;
-evaluation.py scores leaf positions and move_ordering.py decides what
-order to visit children in.
-
-ASSUMPTIONS ABOUT YOUR BOARD (adjust to match your actual Board class):
-    board.get_legal_moves(color) -> list[Move]
-    board.make_move(move)        -> applies the move in place
-    board.undo_move()            -> reverses the last make_move call
-    board.is_game_over()         -> bool (checkmate or stalemate)
-    board.active_color           -> "white" or "black" (whose turn it is)
-"""
-
 from .evaluation import evaluate
 from .move_ordering import order_moves
 
