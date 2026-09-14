@@ -97,7 +97,7 @@
 ├─ Improved game-state detection to distinguish check, checkmate, and stalemate more clearly
 
 └─ Expanded test coverage for pawn checks, king attacks, pins, castling through attacked squares,
-   en passant exposing the king, promotion while in check, and checkmate/stalemate edge cases
+en passant exposing the king, promotion while in check, and checkmate/stalemate edge cases
 
 ## v0.1.8 — Position Representation & Notation
 
@@ -139,16 +139,16 @@
 
 └─ Expanded test coverage for PGN parsing, game replay, Perft validation, move history, and game persistence
 
-## v0.2.0 — AI Engine (Planned)
+## v0.2.0 — AI Engine
 
-├─ New `chess_engine/ai/` module for the from-scratch chess AI
+├─ Added new `chess_engine/ai/` module for the from-scratch chess AI
 
-├─ Evaluation function based on material count and piece-square tables
+├─ Added evaluation function based on material count and piece-square tables
 
-├─ Minimax search with alpha-beta pruning
+├─ Added Minimax search with alpha-beta pruning
 
-├─ Move ordering (captures/checks first) for search efficiency
+├─ Added move ordering with captures and checks prioritized for search efficiency
 
-├─ Selectable difficulty levels from 0 to max
+├─ Added selectable difficulty levels from 0 to max
 
-└─ `AIPlayer` interface for integration with the existing game loop
+└─ Added `AIPlayer` interface for integration with the existing game loop
