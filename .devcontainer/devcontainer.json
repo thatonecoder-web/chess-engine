@@ -1,4 +1,22 @@
 {
-  "image": "mcr.microsoft.com/devcontainers/universal:2",
-  "features": {}
+  "name": "Chess Engine Development",
+
+  "image": "mcr.microsoft.com/devcontainers/python:3.12",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "eamodio.gitlens"
+      ],
+      "settings": {
+        "python.testing.pytestEnabled": true
+      }
+    }
+  },
+
+  "postCreateCommand": "pip install -e .[dev]",
+
+  "remoteUser": "vscode"
 }
