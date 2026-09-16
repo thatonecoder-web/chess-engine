@@ -4,7 +4,7 @@ An open-source Python chess engine focused on learning, experimentation, and bui
 
 ## Status
 
-🚀 **v0.2.0** - Chess AI (from scratch)
+🚀 **v0.2.5** - Chess AI (from scratch)
 
 Core chess rules are fully implemented and validated through comprehensive perft testing. v0.2.0 adds the engine's first AI opponent, built from scratch with selectable difficulty levels from 0 to max.
 
