@@ -4,8 +4,10 @@ pyproject.toml
 chess_engine/__init__.py
 chess_engine/board.py
 chess_engine/check.py
+chess_engine/game.py
 chess_engine/main.py
 chess_engine/moves.py
+chess_engine/perft.py
 chess_engine/pieces.py
 chess_engine/rules.py
 chess_engine.egg-info/PKG-INFO
@@ -13,7 +15,15 @@ chess_engine.egg-info/SOURCES.txt
 chess_engine.egg-info/dependency_links.txt
 chess_engine.egg-info/requires.txt
 chess_engine.egg-info/top_level.txt
+chess_engine/AI/__init__.py
+chess_engine/AI/ai_player.py
+chess_engine/AI/benchmarks.py
+chess_engine/AI/difficulty.py
+chess_engine/AI/evaluation.py
+chess_engine/AI/move_ordering.py
+chess_engine/AI/search.py
 tests/test_board.py
 tests/test_check.py
+tests/test_game.py
 tests/test_moves.py
 tests/test_rules.py

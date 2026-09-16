@@ -152,3 +152,61 @@ en passant exposing the king, promotion while in check, and checkmate/stalemate 
 ├─ Added selectable difficulty levels from 0 to max
 
 └─ Added `AIPlayer` interface for integration with the existing game loop
+
+## v0.2.5 — AI Engine Complete
+
+├─ Completed the from-scratch chess AI system, wired against the engine's real Board/Move/Piece classes (the v0.2.0 AI module was scaffolding written against an assumed interface that didn't match)
+
+├─ Advanced position evaluation
+│  ├─ Material evaluation
+│  ├─ Piece-square tables
+│  ├─ Center control
+│  ├─ Piece development
+│  ├─ King safety
+│  └─ Pawn structure
+
+├─ Advanced search
+│  ├─ Minimax
+│  ├─ Alpha-beta pruning
+│  ├─ Iterative deepening
+│  └─ Quiescence search
+
+├─ Advanced move ordering
+│  ├─ Captures (MVV-LVA, including en passant)
+│  ├─ Checks
+│  ├─ Promotions
+│  ├─ Killer moves
+│  └─ History-based ordering
+
+├─ Added configurable search depth and difficulty
+
+├─ Added search limits and AI time management
+
+├─ Added AI search statistics
+│  ├─ Nodes searched
+│  ├─ Search depth
+│  ├─ Evaluation score
+│  └─ Search time
+
+├─ Added deterministic search behavior for identical positions
+
+├─ Added comprehensive AI regression tests
+
+├─ Added tactical test positions
+
+├─ Added AI performance benchmarks
+
+├─ Fixed `Move` equality (`__eq__`/`__hash__`), so a move parsed from input or a fresh move-generation pass compares correctly against a move from another search — this had silently broken move-quality tracking
+
+├─ Improved handling of:
+│  ├─ Checkmate
+│  ├─ Stalemate
+│  ├─ Castling
+│  ├─ En passant
+│  └─ Promotion
+
+├─ Verified AI compatibility with FEN and PGN systems
+
+├─ Integrated the completed AI system with the game loop
+
+└─ Verified the complete pytest suite before release

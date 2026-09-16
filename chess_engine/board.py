@@ -1,4 +1,11 @@
-from .check import move_leaves_king_in_check, is_square_attacked
+from .check import (
+    move_leaves_king_in_check,
+    is_square_attacked,
+    is_in_check,
+    generate_legal_moves,
+    is_checkmate,
+    is_stalemate,
+)
 from .rules import is_valid_move
 
 from .pieces import Pawn, Knight, Bishop, Rook, Queen, King
@@ -395,3 +402,57 @@ class Board:
         self.previous_move = move
 
         return True
+
+    # ------------------------------------------------------------------
+    # AI-facing convenience API
+    #
+    # The AI package (chess_engine/AI/) only ever talks to a Board
+    # through the methods below, so it never needs to know about the
+    # underlying `self.board` grid, coordinate conversion, or how
+    # legality/check detection are implemented.
+    # ------------------------------------------------------------------
+
+    def copy(self):
+        """Return an independent Board with the same position and state.
+
+        Cloning each piece (rather than sharing references) matters: a
+        shallow copy of the grid would still point at the *same* piece
+        objects, so a search exploring a hypothetical line and then
+        discarding the copy would leave `has_moved` flags permanently
+        mutated on the real game's pieces (breaking castling rights).
+
+        This is a plain Python-object copy rather than a to_fen()/
+        from_fen() round trip, since search calls this at every node.
+        """
+        new_board = self.__class__.__new__(self.__class__)
+        new_board.board = [
+            [piece.clone() if piece is not None else None for piece in row]
+            for row in self.board
+        ]
+        new_board.turn = self.turn
+        new_board.previous_move = self.previous_move
+        new_board.en_passant_target = self.en_passant_target
+        new_board.castling_rights = self.castling_rights
+        new_board.halfmove_clock = self.halfmove_clock
+        new_board.fullmove_number = self.fullmove_number
+        return new_board
+
+    def get_legal_moves(self, color=None):
+        """All legal moves for `color` (defaults to the side to move)."""
+        return generate_legal_moves(self, color or self.turn)
+
+    def is_in_check(self, color=None):
+        """Whether `color`'s king is currently attacked (defaults to the side to move)."""
+        return is_in_check(self, color or self.turn)
+
+    def is_checkmate(self, color=None):
+        """Whether `color` (defaults to the side to move) has no legal moves while in check."""
+        return is_checkmate(self, color or self.turn)
+
+    def is_stalemate(self, color=None):
+        """Whether `color` (defaults to the side to move) has no legal moves while NOT in check."""
+        return is_stalemate(self, color or self.turn)
+
+    def is_game_over(self):
+        """Whether the side to move is checkmated or stalemated."""
+        return self.is_checkmate(self.turn) or self.is_stalemate(self.turn)

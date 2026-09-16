@@ -10,15 +10,16 @@ the rest of the engine only ever needs to call:
     move = ai.choose_move(board)              # AI's turn
     ai.observe_player_move(board_before, move, board_after)  # after human moves
 
-ASSUMPTIONS ABOUT YOUR BOARD/MOVE OBJECTS (adjust as needed):
-    board.active_color -> "white" or "black"
-    Move objects are hashable/comparable enough to pass around and
-    compare with `==` (used in estimate_move_quality below).
+ASSUMPTIONS ABOUT YOUR BOARD/MOVE OBJECTS:
+    board.turn -> "white" or "black" (the side to move)
+    Move.__eq__/__hash__ compare by (start, end, promotion), so a move
+    parsed from human input compares equal to the "same" move returned
+    by move generation, even though they're different objects.
 """
 
 import random
 
-from .search import alpha_beta_search, get_top_n_moves
+from .search import alpha_beta_search, get_top_n_moves, iterative_deepening_search
 from .difficulty import PlayerModel, DifficultyController
 
 
@@ -31,7 +32,7 @@ def estimate_move_quality(board_before, player_move, search_depth=3):
     scaling down toward 0.0 the further their move's resulting eval
     is from the best available eval.
     """
-    color = board_before.active_color
+    color = board_before.turn
     maximizing = (color == "white")
 
     top_moves = get_top_n_moves(board_before, search_depth, n=5, maximizing=maximizing)
@@ -103,17 +104,42 @@ class AIPlayer:
         self.player_model = player_model or PlayerModel()
         self.difficulty = difficulty or DifficultyController()
         self.quality_check_depth = quality_check_depth
+        # SearchStats from the most recent choose_move call (nodes,
+        # depth reached, time spent, ...), or None if the last move was
+        # picked from a candidate pool instead (see choose_move below).
+        self.last_search_stats = None
 
     def choose_move(self, board):
         """Select and return the AI's move for the current position."""
         skill = self.player_model.skill_estimate
         depth = self.difficulty.get_depth(skill)
+        time_limit = self.difficulty.get_time_limit(skill)
         pool_size = self.difficulty.get_candidate_pool_size(skill)
         noise = self.difficulty.get_move_noise(skill)
 
         maximizing = (self.color == "white")
-        candidates = get_top_n_moves(board, depth, n=pool_size, maximizing=maximizing)
 
+        if pool_size <= 1 or noise <= 0.0:
+            # At the top of a difficulty level there's no pool to
+            # sample from — just play the strongest move iterative
+            # deepening finds within this level's time budget.
+            #
+            # perspective stays "white" (the default) here, NOT
+            # self.color: alpha-beta's maximizing/minimizing alternation
+            # (derived from whose turn it actually is) is what makes the
+            # search correct for whichever side the AI is playing. Fixed
+            # white-relative scoring is a fixed measuring stick; tying it
+            # to self.color as well would double-flip the sign for Black
+            # and hand the AI its own worst moves (this was a real bug,
+            # caught by a mate-in-1 the Black AI refused to play).
+            _, best_move, stats = iterative_deepening_search(
+                board, max_depth=depth, time_limit=time_limit,
+            )
+            self.last_search_stats = stats
+            return best_move
+
+        self.last_search_stats = None
+        candidates = get_top_n_moves(board, depth, n=pool_size, maximizing=maximizing)
         return weighted_pick(candidates, noise)
 
     def observe_player_move(self, board_before, player_move):

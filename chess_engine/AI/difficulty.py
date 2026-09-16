@@ -74,17 +74,34 @@ class DifficultyController:
 
     def __init__(self, min_depth=1, max_depth=6,
                  min_noise=0.0, max_noise=0.4,
-                 candidate_pool_size=3):
+                 candidate_pool_size=3,
+                 min_time_limit=1.0, max_time_limit=8.0):
         self.min_depth = min_depth
         self.max_depth = max_depth
         self.min_noise = min_noise
         self.max_noise = max_noise
         self.candidate_pool_size = candidate_pool_size
+        self.min_time_limit = min_time_limit
+        self.max_time_limit = max_time_limit
 
     def get_depth(self, skill_estimate):
-        """Higher skill_estimate -> deeper search -> stronger play."""
+        """Higher skill_estimate -> deeper search -> stronger play.
+
+        This is a CEILING passed to iterative deepening as `max_depth`,
+        not a fixed depth the search always reaches — get_time_limit()
+        below is what actually decides how far iterative deepening gets
+        to go before it has to return its best move so far.
+        """
         depth = self.min_depth + skill_estimate * (self.max_depth - self.min_depth)
         return round(depth)
+
+    def get_time_limit(self, skill_estimate):
+        """Seconds of "thinking time" for one move's iterative-deepening
+        search. Higher skill_estimate -> more time -> deeper in practice,
+        since get_depth()'s ceiling is rarely reached at low depths but
+        the search still has to stop somewhere against a strong player.
+        """
+        return self.min_time_limit + skill_estimate * (self.max_time_limit - self.min_time_limit)
 
     def get_move_noise(self, skill_estimate):
         """
