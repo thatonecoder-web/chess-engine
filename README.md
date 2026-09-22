@@ -1,55 +1,43 @@
 # Chess Engine
 
-An open-source Python chess engine focused on learning, experimentation, and building chess AI from the ground up.
+A Python chess engine built from scratch, mostly as a way to learn how chess engines actually work.
 
 ## Status
 
-🚀 **v0.2.0** - Chess AI (from scratch)
-
-Core chess rules are fully implemented and validated through comprehensive perft testing. v0.2.0 adds the engine's first AI opponent, built from scratch with selectable difficulty levels from 0 to max.
+v0.3.1. Core rules and move generation are done and perft-validated. There's a from-scratch AI (v0.2.0-v0.2.5) with adjustable difficulty, and a terminal app (v0.2.6-v0.3.0) built around it - main menu, a Guide Book, an interactive tutorial, configurable display. v0.3.1 just reorganized the codebase into `core/`, `ai/`, and `cli/` since it had outgrown one flat folder.
 
 ## Features
 
-### Core Chess Engine
-- ✅ Complete board representation with FEN support
-- ✅ All piece movement rules (pawns, knights, bishops, rooks, queens, kings)
-- ✅ Advanced rules: castling, en passant, pawn promotion
-- ✅ Check, checkmate, and stalemate detection
-- ✅ Legal move generation with full validation
-- ✅ Algebraic and FEN notation support
+### Core rules
+Full board representation with FEN, all piece movement including castling/en passant/promotion, check/checkmate/stalemate detection, legal move generation, square-pair and FEN notation.
 
-### Game Management (v0.1.9)
-- ✅ **Move History:** Track moves with move numbers and game state
-- ✅ **PGN Support:** Parse and generate Portable Game Notation
-- ✅ **Undo/Redo:** Full game replay and position restoration
-- ✅ **Game Persistence:** Save/load games in JSON format
-- ✅ **Metadata:** Store player names, event details, dates, results
+### Game management (v0.1.9)
+Move history, PGN parsing and generation, undo/redo, JSON save/load, game metadata (players, event, date, result).
 
-### Validation & Testing
-- ✅ **Perft Testing:** Recursive move generation validation against known positions
-- ✅ **Multiple Test Positions:** Starting position, Kiwipete, en passant, castling, promotion
-- ✅ **Comprehensive Test Suite:** 50+ unit tests covering all rule variations
-- ✅ **Move Generation:** Fully validated through perft up to depth 4
+### Testing
+140 tests across `tests/core/`, `tests/ai/`, `tests/cli/`. Move generation is validated against known perft values through depth 4 on several standard test positions - see `docs/PERFT_VALIDATION.md`.
 
-### Chess AI (v0.2.0 — In Progress)
-- 🚧 **Evaluation Function:** Material count + piece-square tables
-- 🚧 **Search:** Minimax with alpha-beta pruning
-- 🚧 **Move Ordering:** Captures/checks searched first for search efficiency
-- 🚧 **Difficulty Levels:** Selectable strength from 0 to max (depth scaling, move randomness, blunder injection)
-- 🚧 **AIPlayer Interface:** Clean integration with the existing game loop
+### The AI (v0.2.0-v0.2.5)
+Evaluation covers material, piece-square tables, pawn structure, king safety, center control, and development (`ai/evaluation.py`). Search is alpha-beta with quiescence search and iterative deepening under a time budget, ordered by MVV-LVA captures, killer moves, and a history heuristic. Difficulty is adaptive - it tracks how well you're playing and adjusts to match - with named presets (Beginner through Maximum) for menus. `AIPlayer.choose_move(board)` is the whole interface the game loop needs.
+
+### The terminal app (v0.2.6-v0.3.0)
+Main menu with Player vs Player, Player vs AI, and AI vs AI. Unicode board rendering with an ASCII fallback, coordinate labels, turn/check/checkmate status. AI vs AI runs on its own with live search stats, pause/stop, and automatic PGN recording. A built-in Guide Book and an interactive tutorial that uses the real board and move validation. Full command set: `p <from> <to> [promotion]`, `moves`, `history`, `undo`, `redo`, `fen`, `save`, `load`, `help`, `guide`, `quit`. Settings toggle Unicode/ASCII, redraw behavior, captured-piece display, and AI search stats.
 
 ## Quick Start
 
-### Installation
 ```bash
 git clone https://github.com/thatonecoder-web/chess-engine.git
 cd chess-engine
 pip install -e ".[dev]"
 ```
 
-### Basic Usage
+Play in the terminal:
+```bash
+python -m chess_engine.main
+```
 
-#### Playing a Game
+## Library usage
+
 ```python
 from chess_engine import Game, Move
 
@@ -57,42 +45,35 @@ game = Game()
 game.set_metadata("White", "Player 1")
 game.set_metadata("Black", "Player 2")
 
-# Make moves
 game.make_move(Move("e2", "e4"))
 game.make_move(Move("c7", "c5"))
 game.make_move(Move("g1", "f3"))
 
-# Display board
 game.board.display()
 
-# Undo/redo
 game.undo()
 game.redo()
 ```
 
-#### Loading a Position
+Loading a FEN position:
 ```python
 from chess_engine import Board
 
 board = Board()
-# Start from a FEN position
 board.from_fen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1")
 board.display()
 ```
 
-#### PGN Support
+PGN:
 ```python
 from chess_engine import Game
 
-# Generate PGN
 game = Game()
 game.set_metadata("White", "Alice")
 game.set_metadata("Black", "Bob")
 # ... make moves ...
 pgn = game.to_pgn()
-print(pgn)
 
-# Parse PGN
 pgn_text = """[White "Alice"]
 [Black "Bob"]
 
@@ -103,65 +84,49 @@ game2 = Game()
 game2.from_pgn(pgn_text)
 ```
 
-#### Game Persistence
+Save/load:
 ```python
-# Save game
 game.save_to_file("my_game.json")
 
-# Load game
 game2 = Game()
 game2.load_from_file("my_game.json")
 ```
 
-#### Move Generation Validation
+Perft:
 ```python
 from chess_engine import Board, perft, perft_divide
 
 board = Board()
-
-# Count positions at depth 4
-count = perft(board, 4)  # Returns 119,060 for starting position
-print(f"Perft(4): {count:,}")
-
-# Breakdown by first move
+count = perft(board, 4)  # 119,060 for the starting position
 divide = perft_divide(board, 2)
 for move, count in divide.items():
     print(f"{move}: {count}")
 ```
 
-#### Playing Against the AI (v0.2.0)
+Playing against the AI:
 ```python
 from chess_engine import Game, Move
-from chess_engine.ai import AIPlayer
+from chess_engine.ai.difficulty_levels import make_ai_player
 
 game = Game()
-ai = AIPlayer(level=5)  # 0 = weakest, "max" = strongest
+ai = make_ai_player("black", "Hard")  # Beginner, Easy, Medium, Hard, Expert, Maximum
 
 game.make_move(Move("e2", "e4"))
-ai_move = ai.get_move(game.board)
+ai_move = ai.choose_move(game.board)
 game.make_move(ai_move)
+ai.observe_player_move(game.board, Move("e2", "e4"))  # so it can adapt to you
 ```
 
 ## Testing
 
-### Run All Tests
 ```bash
-pytest tests/ -v
-```
+pytest tests/ -v            # everything
+pytest tests/core/ -v       # rules only
+pytest tests/ai/ -v         # AI only
+pytest tests/cli/ -v        # terminal app only
 
-### Run Perft Tests Only
-```bash
-pytest tests/test_perft.py -v
-```
-
-### Run AI Tests Only
-```bash
-pytest tests/ai/ -v
-```
-
-### Run Interactive Perft Validation
-```bash
-python run_perft_tests.py
+python run_perft_tests.py       # interactive perft validation
+python run_ai_benchmarks.py     # AI search benchmarks
 ```
 
 ## Project Structure
@@ -169,136 +134,93 @@ python run_perft_tests.py
 ```
 chess-engine/
 ├── chess_engine/
-│   ├── __init__.py           # Package exports
-│   ├── board.py              # Board representation & FEN
-│   ├── moves.py              # Move class & notation
-│   ├── pieces.py             # Piece definitions
-│   ├── rules.py              # Movement validation
-│   ├── check.py              # Check/checkmate/legal moves
-│   ├── game.py               # Game history & PGN support (v0.1.9)
-│   ├── perft.py              # Perft testing framework (v0.1.9)
-│   └── ai/                   # Chess AI, from scratch (NEW v0.2.0)
-│       ├── __init__.py
-│       ├── evaluation.py     # Material count + piece-square tables
-│       ├── search.py         # Minimax with alpha-beta pruning
-│       ├── move_ordering.py  # Captures/checks-first ordering
-│       ├── difficulty.py     # Level 0-max config
-│       └── ai_player.py      # AIPlayer interface
+│   ├── __init__.py             # public API
+│   ├── main.py                 # python -m chess_engine.main
+│   ├── core/                   # pure chess: rules, state, no AI or UI
+│   │   ├── board.py
+│   │   ├── moves.py
+│   │   ├── pieces.py
+│   │   ├── rules.py
+│   │   ├── check.py
+│   │   ├── game.py             # history & PGN (v0.1.9)
+│   │   └── perft.py            # (v0.1.9)
+│   ├── ai/                     # the engine (v0.2.0-v0.2.5)
+│   │   ├── evaluation.py
+│   │   ├── search.py           # alpha-beta, quiescence, iterative deepening
+│   │   ├── move_ordering.py
+│   │   ├── difficulty.py       # adaptive skill tracking
+│   │   ├── difficulty_levels.py
+│   │   ├── ai_player.py
+│   │   └── benchmarks.py
+│   └── cli/                    # the terminal app (v0.2.6-v0.3.0)
+│       ├── menu.py
+│       ├── play.py             # game loop for all three modes
+│       ├── commands.py
+│       ├── guide.py
+│       ├── tutorial.py
+│       ├── settings.py
+│       └── ui.py
 ├── tests/
-│   ├── test_moves.py         # Move parsing tests
-│   ├── test_board.py         # Board & FEN tests
-│   ├── test_rules.py         # Piece movement tests
-│   ├── test_check.py         # Check & legal move tests
-│   ├── test_game.py          # Game & PGN tests (v0.1.9)
-│   ├── test_perft.py         # Perft validation tests (v0.1.9)
-│   └── ai/                   # AI tests (NEW v0.2.0)
-│       ├── test_evaluation.py
-│       ├── test_search.py
-│       ├── test_move_ordering.py
-│       ├── test_difficulty.py
-│       └── test_ai_player.py
-├── run_perft_tests.py        # Interactive perft runner
-├── PERFT_VALIDATION.md       # Perft test documentation
-├── README.md                 # This file
-├── changelog                 # Version history
-├── pyproject.toml            # Project configuration
-└── LICENSE                   # MIT License
+│   ├── core/
+│   ├── ai/
+│   └── cli/
+├── run_perft_tests.py
+├── run_ai_benchmarks.py
+├── docs/
+│   ├── PERFT_VALIDATION.md
+│   ├── CHANGELOG.md
+│   ├── REPOSITORY_ORGANIZATION.md
+│   └── releases/
+│       ├── RELEASE_v0.2.5.md
+│       └── RELEASE_v0.3.1.md
+├── README.md
+├── pyproject.toml
+└── LICENSE
 ```
 
 ## Architecture
 
-### Move Generation Pipeline
-1. **Board State:** Maintain current position, castling rights, en passant target
-2. **Legal Moves:** Generate all legal moves for a color using `generate_legal_moves()`
-3. **Validation:** Verify moves don't leave own king in check
-4. **Special Handling:** Castling, en passant, and promotion through board methods
+**Move generation:** the board tracks position, castling rights, and en passant target. `generate_legal_moves()` produces every legal move for a color, filtering out anything that leaves that side's own king in check. Castling, en passant, and promotion are handled as special cases on top of the base movement rules.
 
-### Perft Testing
-Perft (Performance Test) validates move generation by:
-- Recursively counting leaf nodes at a given depth
-- Comparing against known correct values
-- Testing starting position, Kiwipete, and tactical positions
-- Verifying all chess rules including special moves
+**Perft:** counts leaf positions at a given depth and checks the count against known-correct values for a handful of standard positions (starting position, Kiwipete, a few tactical/special-rules positions). Full writeup in `docs/PERFT_VALIDATION.md`.
 
-**Validated Positions:**
 | Position | Depth 1 | Depth 2 | Depth 3 | Depth 4 |
 |----------|---------|---------|---------|---------|
-| Starting | 20 ✓ | 400 ✓ | 5,902 ✓ | 119,060 ✓ |
-| Kiwipete | 48 ✓ | 2,039 ✓ | 97,862 | 4,085,603 |
-| Position 3 | 14 ✓ | 191 ✓ | 2,812 | 43,238 |
-| Position 4 | 6 ✓ | 264 ✓ | 9,467 | 422,333 |
-| Position 5 | 29 ✓ | 953 ✓ | 27,990 | 871,198 |
+| Starting | 20 | 400 | 5,902 | 119,060 |
+| Kiwipete | 48 | 2,039 | 97,862 | 4,085,603 |
+| Position 3 | 14 | 191 | 2,812 | 43,238 |
+| Position 4 | 6 | 264 | 9,467 | 422,333 |
+| Position 5 | 29 | 953 | 27,990 | 871,198 |
 
-See [PERFT_VALIDATION.md](PERFT_VALIDATION.md) for detailed perft test documentation.
+**The AI:** evaluation scores material, piece-square tables, pawn structure, king safety, center control, and development. Search is alpha-beta with quiescence search at the leaves and iterative deepening under a time budget, using move ordering (MVV-LVA, killer moves, history) to prune more aggressively. `difficulty.py`'s `PlayerModel` tracks a continuous skill estimate rather than a fixed level; `difficulty_levels.py` maps named presets onto that scale, either adapting further (Player vs AI) or pinned for the game (AI vs AI). The whole thing is reachable through `AIPlayer.choose_move(board)`, so internals can change without touching how it's called.
 
-### Chess AI (v0.2.0)
-The AI is built from scratch on top of the existing move generator:
-- **Evaluation:** Scores a position using material count and piece-square tables
-- **Search:** Minimax with alpha-beta pruning explores the game tree, aided by move ordering (captures/checks first) for efficiency
-- **Difficulty:** A single `difficulty.py` config table drives depth, move-randomness-among-top-N, and blunder probability per level, so tuning strength doesn't require touching the search code
-- **Integration:** `AIPlayer.get_move(board)` is the only interface `game.py` needs — internals (including a future bitboard rewrite in v0.3.0) can change without affecting how the game loop calls the AI
+**The terminal app:** a thin layer over the same `Board`/`Game`/`AIPlayer` classes above. `cli.menu` drives the main menu, `cli.play` runs the game loop for all three modes (sharing captured-piece tracking, undo/redo, save/load, and commands regardless of who's moving), `cli.ui` renders the board, `cli.guide`/`cli.tutorial` hold their content, and `cli.settings.Settings` is one mutable object threaded through all of it.
 
-## Changelog
+## Documentation
 
-### v0.2.0 — Chess AI (from scratch)
-- 🚧 Evaluation function: material count + piece-square tables
-- 🚧 Minimax search with alpha-beta pruning
-- 🚧 Move ordering (captures/checks first) for search efficiency
-- 🚧 Selectable difficulty levels, 0 to max
-- 🚧 `AIPlayer` interface for integration with the existing game loop
-
-### v0.1.9 — Game Records & Engine Validation
-- ✅ Move history tracking with move numbers and game state information
-- ✅ PGN (Portable Game Notation) parsing and generation
-- ✅ PGN game metadata support (players, event, site, date, result)
-- ✅ Complete game replay from PGN move sequences
-- ✅ Recursive Perft testing for validating legal move generation
-- ✅ Standard starting-position Perft test cases
-- ✅ Tactical and special-rule Perft positions (castling, en passant, promotion, checks, pins)
-- ✅ Move-generation regression tests based on Perft results
-- ✅ JSON-based save files for preserving resumable game state
-- ✅ Undo and redo functionality using recorded game state
-- ✅ Expanded test coverage for PGN parsing, game replay, Perft validation, move history, and persistence
-
-### Previous Versions
-See [changelog](changelog) for complete version history.
+- [docs/PERFT_VALIDATION.md](docs/PERFT_VALIDATION.md) - perft methodology and validated positions
+- [docs/CHANGELOG.md](docs/CHANGELOG.md) - full version history
+- [docs/REPOSITORY_ORGANIZATION.md](docs/REPOSITORY_ORGANIZATION.md) - current structure and status
+- [docs/releases/RELEASE_v0.2.5.md](docs/releases/RELEASE_v0.2.5.md) - the from-scratch AI
+- [docs/releases/RELEASE_v0.3.1.md](docs/releases/RELEASE_v0.3.1.md) - the terminal app and the reorg
 
 ## Goals
 
-- Learn how chess engines work
-- Build chess AI from scratch
-- Experiment with different approaches
-- Keep the project open-source and easy to contribute to
+Learn how chess engines work, build the AI from scratch, experiment, keep it easy to contribute to.
 
-## Next Steps (Future Versions)
+## What's left
 
-- [ ] **Bitboard Representation:** Board representation optimization for search speed (v0.3.0)
-- [ ] **Transposition Tables:** Avoid re-searching repeated positions (v0.3.0)
-- [ ] **Quiescence Search:** Avoid the horizon effect on tactical sequences (v0.3.0)
-- [ ] **Iterative Deepening:** Search under a time budget (v0.3.0)
-- [ ] **Standard Notation:** Full SAN (Standard Algebraic Notation) support (v0.3.0)
-- [ ] **UCI Protocol:** Standard chess GUI integration (v0.3.0)
-- [ ] **Opening Book:** Standard chess openings (v0.4.0)
-- [ ] **Endgame Tables:** Tablebases (v0.4.0)
+- Bitboards (search still deep-copies a plain 8x8 grid at every node)
+- Transposition table
+- Full SAN, alongside the current square-pair notation
+- UCI protocol
+- Opening book
+- Endgame tablebases
 
 ## Contributing
 
-This is an open-source educational project. Contributions welcome!
-
-Areas for improvement:
-- Performance optimizations (bitboards, transposition tables)
-- Engine evaluation functions
-- Search algorithms (minimax, alpha-beta, NegaMax)
-- UCI/XBoard protocol support
-- Comprehensive documentation
-- Additional test positions
+Open to it - this is a learning project. Bitboards/transposition tables, evaluation tuning, search variants, UCI support, more test positions, and general documentation cleanup are all fair game.
 
 ## License
 
-See [LICENSE](LICENSE) for details.
-
----
-
-**Status:** 🚀 Core chess rules fully validated; the from-scratch AI is in progress for v0.2.0.
-
-For detailed perft test results and move generation validation, see [PERFT_VALIDATION.md](PERFT_VALIDATION.md).
+See [LICENSE](LICENSE).

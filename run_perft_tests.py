@@ -2,8 +2,8 @@
 """Run perft tests and display results."""
 
 import sys
-from chess_engine.perft import run_perft_test, perft_divide
-from chess_engine.board import Board
+from chess_engine.core.perft import run_perft_test, perft_divide, perft
+from chess_engine.core.board import Board
 
 def print_header(text):
     print(f"\n{'='*60}")
@@ -17,6 +17,9 @@ def print_result(depth, count, expected, status):
     else:
         print(f"  Perft({depth}): {count:>12,} {status_symbol}")
 
+
+    all_passed = True
+
 # Test 1: Starting Position
 print_header("PERFT Test 1: Starting Position")
 results = run_perft_test("starting", depth=4)
@@ -24,6 +27,7 @@ for depth in range(5):
     if depth in results:
         r = results[depth]
         print_result(depth, r["count"], r["expected"], r["status"])
+        all_passed = all_passed and r["status"] == "✓"
 
 # Test 2: Kiwipete Position (complex position with many pieces)
 print_header("PERFT Test 2: Kiwipete Position")
@@ -31,12 +35,12 @@ board = Board()
 board.from_fen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1")
 
 perft_values = {0: 1, 1: 48, 2: 2_039, 3: 97_862, 4: 4_085_603}
-from chess_engine.perft import perft
 for depth in range(4):
     count = perft(board, depth)
     expected = perft_values.get(depth)
     status = "✓" if count == expected else "✗"
     print_result(depth, count, expected, status)
+    all_passed = all_passed and status == "✓"
 
 # Test 3: Position 3 (en passant and promotion)
 print_header("PERFT Test 3: Position 3 (En Passant & Promotion)")
@@ -49,6 +53,7 @@ for depth in range(4):
     expected = perft_values_3.get(depth)
     status = "✓" if count == expected else "✗"
     print_result(depth, count, expected, status)
+    all_passed = all_passed and status == "✓"
 
 # Test 4: Position 4 (castling rights)
 print_header("PERFT Test 4: Position 4 (Castling Rights)")
@@ -61,6 +66,7 @@ for depth in range(4):
     expected = perft_values_4.get(depth)
     status = "✓" if count == expected else "✗"
     print_result(depth, count, expected, status)
+    all_passed = all_passed and status == "✓"
 
 # Test 5: Position 5 (en passant target)
 print_header("PERFT Test 5: Position 5 (En Passant Target)")
@@ -73,6 +79,11 @@ for depth in range(4):
     expected = perft_values_5.get(depth)
     status = "✓" if count == expected else "✗"
     print_result(depth, count, expected, status)
+    all_passed = all_passed and status == "✓"
 
 print_header("PERFT TEST COMPLETE")
-print("All tests passed! ✓ Move generation is validated.\n")
+if all_passed:
+    print("All tests passed! ✓ Move generation is validated.\n")
+else:
+    print("Some perft tests failed. Move generation needs investigation.\n")
+    sys.exit(1)

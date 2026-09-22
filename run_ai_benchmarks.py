@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Run AI search performance benchmarks and display results."""
 
-from chess_engine.AI.benchmarks import run_ai_benchmarks
+from chess_engine.ai.benchmarks import run_ai_benchmarks
 
 
 def print_header(text):
