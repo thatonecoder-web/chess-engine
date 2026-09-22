@@ -1,3 +1,6 @@
+# PLEASE DO NOT ATTEMPT TO PLAY
+# GAME IS BROKEN RIGHT NOW, FIXES UNDERWAY
+
 # Chess Engine
 
 A Python chess engine built from scratch, mostly as a way to learn how chess engines actually work.
